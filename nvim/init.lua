@@ -75,7 +75,12 @@ require('lazy').setup({
     'nvim-treesitter/nvim-treesitter',
     build = ':TSUpdate',
     config = function()
-      require('nvim-treesitter.configs').setup({
+      local status_ok, configs = pcall(require, 'nvim-treesitter.configs')
+      if not status_ok then
+        return
+      end
+
+      configs.setup({
         ensure_installed = {
           'markdown', 'markdown_inline',
           'lua', 'bash', 'python',
@@ -160,10 +165,23 @@ require('lazy').setup({
   -- Telescope (fuzzy finder)
   {
     'nvim-telescope/telescope.nvim',
-    tag = '0.1.8',
+    branch = 'master',  -- Use master for better nvim 0.11+ compatibility
     dependencies = { 'nvim-lua/plenary.nvim' },
     config = function()
-      require('telescope').setup({
+      -- Compatibility shim for treesitter ft_to_lang (nvim 0.11+)
+      if vim.treesitter.language and not vim.treesitter.language.get_lang then
+        vim.treesitter.language.get_lang = function(ft)
+          -- Use filetype.get_option for nvim 0.11+
+          local ok, lang = pcall(vim.treesitter.language.get_lang, ft)
+          if ok then return lang end
+          -- Fallback to filetype
+          return ft
+        end
+      end
+
+      local telescope = require('telescope')
+
+      telescope.setup({
         defaults = {
           layout_config = {
             width = 0.8,
