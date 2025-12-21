@@ -1,0 +1,38 @@
+# <type>: <subject> (max 50 chars)
+# |<----  Using a Maximum Of 50 Characters  ---->|
+
+# Body: Explain *what* and *why* (not *how*), wrap at 72 chars
+# |<----   Try To Limit Each Line to a Maximum Of 72 Characters   ---->|
+
+# --- COMMIT END ---
+# Type can be:
+#   feat     New feature
+#   fix      Bug fix
+#   docs     Documentation only
+#   style    Formatting, no code change
+#   refactor Code change, no new feature or bug fix
+#   perf     Performance improvement
+#   test     Adding/updating tests
+#   chore    Maintenance, dependencies, configs
+#   ci       CI/CD changes
+#   build    Build system changes
+#
+# Remember:
+#   - Capitalize the subject line
+#   - Do not end the subject line with a period
+#   - Use imperative mood: "Add feature" not "Added feature"
+#   - Separate subject from body with a blank line
+#   - Body should explain what and why, not how
+#   - Reference issues at the bottom: "Fixes #123"
+#
+# Example:
+#   feat: Add user authentication
+#
+#   Implement JWT-based authentication to secure API endpoints.
+#   Users can now register and login with email/password.
+#
+#   - Add /auth/register and /auth/login endpoints
+#   - Store hashed passwords with bcrypt
+#   - Return JWT token on successful login
+#
+#   Fixes #42
