@@ -168,21 +168,14 @@ require('lazy').setup({
     branch = 'master',  -- Use master for better nvim 0.11+ compatibility
     dependencies = { 'nvim-lua/plenary.nvim' },
     config = function()
-      -- Compatibility shim for treesitter ft_to_lang (nvim 0.11+)
-      if vim.treesitter.language and not vim.treesitter.language.get_lang then
-        vim.treesitter.language.get_lang = function(ft)
-          -- Use filetype.get_option for nvim 0.11+
-          local ok, lang = pcall(vim.treesitter.language.get_lang, ft)
-          if ok then return lang end
-          -- Fallback to filetype
-          return ft
-        end
-      end
-
       local telescope = require('telescope')
 
       telescope.setup({
         defaults = {
+          -- Disable treesitter in previews to avoid ft_to_lang errors in nvim 0.11+
+          preview = {
+            treesitter = false,
+          },
           layout_config = {
             width = 0.8,
             height = 0.8,
