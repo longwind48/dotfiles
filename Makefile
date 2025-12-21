@@ -2,7 +2,7 @@
 # Dotfiles Makefile
 # ============================================
 
-.PHONY: all install tmux nvim zsh cheatsheets deps uninstall help
+.PHONY: all install tmux nvim zsh cheatsheets deps fonts uninstall help
 
 all: install
 
@@ -21,8 +21,11 @@ zsh: ## Install only zsh aliases
 cheatsheets: ## Install only cheatsheets
 	@./install.sh cheatsheets
 
-deps: ## Check/install dependencies
+deps: ## Check/install dependencies and fonts
 	@./install.sh deps
+
+fonts: ## Check/install Nerd Font
+	@./install.sh fonts
 
 uninstall: ## Remove symlinks
 	@./install.sh uninstall

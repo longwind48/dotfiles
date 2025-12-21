@@ -71,6 +71,10 @@ install_tmux() {
     else
         success "TPM already installed."
     fi
+
+    # Create resurrect directory to prevent errors on fresh installs
+    mkdir -p "$HOME/.tmux/resurrect"
+    success "Tmux resurrect directory created."
 }
 
 # Install neovim configuration
@@ -109,6 +113,40 @@ install_zsh() {
     fi
 }
 
+# Install Nerd Font
+install_fonts() {
+    info "Checking for Nerd Font..."
+
+    if [[ "$OS" == "macos" ]]; then
+        # Check if JetBrains Mono Nerd Font is installed
+        if ls ~/Library/Fonts/*JetBrainsMono*Nerd* >/dev/null 2>&1; then
+            success "Nerd Font already installed."
+        else
+            warn "Nerd Font not found. The Catppuccin tmux theme requires a Nerd Font."
+            if command -v brew >/dev/null; then
+                read -p "Install JetBrains Mono Nerd Font with Homebrew? [y/N] " -n 1 -r
+                echo
+                if [[ $REPLY =~ ^[Yy]$ ]]; then
+                    brew install --cask font-jetbrains-mono-nerd-font
+                    success "Nerd Font installed."
+                    echo
+                    warn "IMPORTANT: Configure your terminal to use 'JetBrainsMono Nerd Font Mono'"
+                    warn "  iTerm2: Preferences → Profiles → Text → Font"
+                    warn "  Terminal.app: Preferences → Profiles → Font"
+                    warn "Without this, tmux will show weird symbols (�) instead of icons."
+                    echo
+                fi
+            else
+                warn "Homebrew not found. Install manually from: https://www.nerdfonts.com/"
+            fi
+        fi
+    elif [[ "$OS" == "linux" ]]; then
+        info "On Linux, install a Nerd Font manually:"
+        info "  https://www.nerdfonts.com/font-downloads"
+        info "  Recommended: JetBrains Mono Nerd Font"
+    fi
+}
+
 # Install dependencies (optional)
 install_deps() {
     info "Checking dependencies..."
@@ -141,6 +179,9 @@ install_deps() {
     else
         success "All dependencies installed."
     fi
+
+    # Check and install Nerd Font
+    install_fonts
 }
 
 # Uninstall (remove symlinks, restore backups)
@@ -177,7 +218,8 @@ Commands:
     nvim        Install only neovim configuration
     zsh         Install only zsh aliases
     cheatsheets Install only cheatsheets
-    deps        Check/install dependencies
+    deps        Check/install dependencies and Nerd Font
+    fonts       Check/install Nerd Font only
     uninstall   Remove symlinks
     help        Show this help message
 
@@ -185,6 +227,7 @@ Examples:
     ./install.sh              # Install everything
     ./install.sh tmux         # Install only tmux
     ./install.sh deps         # Check dependencies
+    ./install.sh fonts        # Install Nerd Font
 EOF
 }
 
@@ -219,6 +262,9 @@ main() {
             ;;
         deps)
             install_deps
+            ;;
+        fonts)
+            install_fonts
             ;;
         uninstall)
             uninstall
