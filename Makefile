@@ -2,7 +2,7 @@
 # Dotfiles Makefile
 # ============================================
 
-.PHONY: all install tmux nvim zsh cheatsheets deps fonts uninstall help
+.PHONY: all install tmux ghostty nvim zsh cheatsheets deps fonts uninstall help
 
 all: install
 
@@ -11,6 +11,9 @@ install: ## Install all configurations
 
 tmux: ## Install only tmux configuration
 	@./install.sh tmux
+
+ghostty: ## Install only Ghostty configuration
+	@./install.sh ghostty
 
 nvim: ## Install only neovim configuration
 	@./install.sh nvim

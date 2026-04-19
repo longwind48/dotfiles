@@ -77,6 +77,19 @@ install_tmux() {
     success "Tmux resurrect directory created."
 }
 
+# Install ghostty configuration
+install_ghostty() {
+    info "Installing Ghostty configuration..."
+    # XDG location (works on Linux and macOS)
+    link "$DOTFILES_DIR/ghostty/config" "$HOME/.config/ghostty/config"
+
+    # macOS also reads from Application Support — symlink the legacy filename too
+    if [[ "$OS" == "macos" ]]; then
+        link "$DOTFILES_DIR/ghostty/config" "$HOME/Library/Application Support/com.mitchellh.ghostty/config.ghostty"
+    fi
+    success "Ghostty config installed. Reload with Cmd+Shift+,"
+}
+
 # Install neovim configuration
 install_nvim() {
     info "Installing Neovim configuration..."
@@ -190,6 +203,8 @@ uninstall() {
 
     # Remove symlinks
     [[ -L "$HOME/.tmux.conf" ]] && rm "$HOME/.tmux.conf" && success "Removed ~/.tmux.conf"
+    [[ -L "$HOME/.config/ghostty/config" ]] && rm "$HOME/.config/ghostty/config" && success "Removed ~/.config/ghostty/config"
+    [[ -L "$HOME/Library/Application Support/com.mitchellh.ghostty/config.ghostty" ]] && rm "$HOME/Library/Application Support/com.mitchellh.ghostty/config.ghostty" && success "Removed ghostty macOS config"
     [[ -L "$HOME/.config/nvim/init.lua" ]] && rm "$HOME/.config/nvim/init.lua" && success "Removed ~/.config/nvim/init.lua"
     [[ -L "$HOME/.config/cheatsheets/tmux.md" ]] && rm "$HOME/.config/cheatsheets/tmux.md" && success "Removed ~/.config/cheatsheets/tmux.md"
     [[ -L "$HOME/.config/cheatsheets/nvim.md" ]] && rm "$HOME/.config/cheatsheets/nvim.md" && success "Removed ~/.config/cheatsheets/nvim.md"
@@ -215,6 +230,7 @@ Usage: ./install.sh [command]
 Commands:
     install     Install all configurations (default)
     tmux        Install only tmux configuration
+    ghostty     Install only Ghostty configuration
     nvim        Install only neovim configuration
     zsh         Install only zsh aliases
     cheatsheets Install only cheatsheets
@@ -237,6 +253,7 @@ main() {
         install)
             install_deps
             install_tmux
+            install_ghostty
             install_nvim
             install_cheatsheets
             install_zsh
@@ -250,6 +267,9 @@ main() {
             ;;
         tmux)
             install_tmux
+            ;;
+        ghostty)
+            install_ghostty
             ;;
         nvim)
             install_nvim

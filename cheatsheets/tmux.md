@@ -13,6 +13,8 @@
 | `tmux rename -t old new` | Rename session (CLI) |
 | `C-Space d` | Detach |
 | `C-Space s` | Session picker |
+| `Alt+s` | Session picker (no prefix) |
+| `C-Space Tab` | Toggle last session |
 | `C-Space $` | Rename session |
 | `C-Space (` | Previous session |
 | `C-Space )` | Next session |

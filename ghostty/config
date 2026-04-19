@@ -1,0 +1,83 @@
+# Ghostty config
+# Reload: Cmd+Shift+,
+# View all options: ghostty +show-config --default --docs
+
+# --- Typography ---
+font-family = "JetBrainsMono Nerd Font"
+font-size = 14
+font-thicken = true
+
+# --- Theme (dark) ---
+theme = Catppuccin Mocha
+# Alternatives: TokyoNight, Dracula, GruvboxDark, Kanagawa
+
+# --- Window appearance ---
+background-opacity = 0.95
+background-blur-radius = 20
+macos-titlebar-style = tabs
+window-padding-x = 10
+window-padding-y = 8
+window-padding-balance = true
+window-save-state = always
+
+# --- Cursor ---
+cursor-style = bar
+cursor-style-blink = true
+
+# --- Mouse ---
+mouse-hide-while-typing = true
+
+# --- macOS ---
+macos-option-as-alt = left
+
+# --- Notifications ---
+# Desktop notifications via OSC 9 (used by Claude Code, opencode, etc.)
+desktop-notifications = true
+
+# Notify when a command finishes (only works OUTSIDE tmux — tmux strips the
+# OSC 133 shell-integration marks Ghostty needs). Fires only for commands
+# that took >10s and only when the window is unfocused, to avoid spam.
+notify-on-command-finish = unfocused
+notify-on-command-finish-after = 10s
+
+# --- tmux-friendly settings ---
+# Ghostty advertises xterm-ghostty; tmux 3.4+ understands it.
+# If your tmux is older, uncomment:
+# term = xterm-256color
+
+# Prevent Ghostty's cursor-shape OSC from fighting tmux/vim cursor management
+shell-integration = detect
+shell-integration-features = no-cursor,sudo,title
+
+# tmux handles its own scrollback, but this helps when detached
+scrollback-limit = 10000000
+
+# Let tmux's set-clipboard work via OSC 52
+clipboard-read = allow
+clipboard-write = allow
+clipboard-paste-protection = true
+
+# --- Keybindings ---
+# Tabs
+keybind = cmd+t=new_tab
+keybind = cmd+w=close_surface
+keybind = cmd+shift+left=previous_tab
+keybind = cmd+shift+right=next_tab
+
+# Font size
+keybind = cmd+plus=increase_font_size:1
+keybind = cmd+minus=decrease_font_size:1
+keybind = cmd+zero=reset_font_size
+
+# Reload config
+keybind = cmd+shift+comma=reload_config
+
+# Insert literal newline (works in shell + TUIs like Claude Code, opencode)
+# \x1b\r = ESC + CR, which tmux passes through cleanly
+keybind = alt+enter=text:\x1b\r
+keybind = shift+enter=text:\x1b\r
+
+# Quick terminal (Quake-style dropdown)
+keybind = global:ctrl+grave_accent=toggle_quick_terminal
+quick-terminal-position = top
+quick-terminal-screen = mouse
