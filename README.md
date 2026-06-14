@@ -14,7 +14,7 @@ cd ~/.dotfiles
 
 - **Ghostty** terminal with Catppuccin Mocha theme, JetBrains Mono Nerd Font, and tmux-friendly settings
 - **Tmux** with Catppuccin theme, vi-style navigation, and session persistence
-- **Neovim** with LSP support, fuzzy finding, and markdown editing
+- **Neovim** with LSP support, fuzzy finding, markdown editing, and molten-nvim (Jupyter cells)
 - **Zsh aliases** for tmux/nvim workflow shortcuts
 - **Cheatsheets** accessible via `tmuxhelp` and `nvimhelp` commands
 
@@ -75,7 +75,8 @@ Run `./install.sh deps` to check and install all dependencies.
 ./install.sh           # Install everything
 ./install.sh ghostty   # Install Ghostty only
 ./install.sh tmux      # Install tmux only
-./install.sh nvim      # Install neovim only
+./install.sh nvim      # Install neovim (config + Python venv)
+./install.sh nvim-venv # Create/update neovim Python venv only
 ./install.sh zsh       # Install zsh aliases only
 ./install.sh deps      # Check/install dependencies
 ./install.sh uninstall # Remove all symlinks

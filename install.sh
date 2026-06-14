@@ -95,7 +95,45 @@ install_nvim() {
     info "Installing Neovim configuration..."
     mkdir -p "$HOME/.config/nvim"
     link "$DOTFILES_DIR/nvim/init.lua" "$HOME/.config/nvim/init.lua"
+    link "$DOTFILES_DIR/nvim/lua" "$HOME/.config/nvim/lua"
     success "Neovim config installed. Plugins will install on first launch."
+
+    install_nvim_venv
+}
+
+# Create the dedicated neovim Python venv for molten-nvim (Jupyter cells).
+# nvim/lua/traci/core/options.lua expects ~/.virtualenvs/neovim with pynvim,
+# jupyter, and jupytext available.
+install_nvim_venv() {
+    local venv="$HOME/.virtualenvs/neovim"
+
+    if ! command -v uv >/dev/null; then
+        warn "uv not found — skipping neovim Python venv (needed for molten-nvim/Jupyter)."
+        warn "  Install uv (https://docs.astral.sh/uv/) then re-run: ./install.sh nvim-venv"
+        return
+    fi
+
+    if [[ -x "$venv/bin/python" ]]; then
+        success "neovim Python venv already exists at $venv"
+    else
+        info "Creating neovim Python venv at $venv..."
+        uv venv "$venv" --python 3.12
+    fi
+
+    info "Installing molten-nvim Python dependencies..."
+    uv pip install --python "$venv/bin/python" \
+        pynvim jupyter jupytext jupyter_client cairosvg pnglatex plotly kaleido pyperclip
+
+    # Register a Jupyter kernel so :MoltenInit has one to connect to.
+    "$venv/bin/python" -m ipykernel install --user --name neovim --display-name "Python (neovim)"
+    success "neovim venv ready (kernel 'neovim' registered)."
+
+    # Register molten's remote-plugin manifest so :MoltenInit is available.
+    if command -v nvim >/dev/null; then
+        info "Registering molten remote-plugin manifest..."
+        nvim --headless "+Lazy! load molten-nvim" +UpdateRemotePlugins +qa 2>/dev/null || \
+            warn "Could not update remote plugins automatically — run :UpdateRemotePlugins in nvim."
+    fi
 }
 
 # Install cheatsheets
@@ -174,6 +212,7 @@ install_deps() {
     command -v rg >/dev/null || missing+=("ripgrep")
     command -v node >/dev/null || missing+=("node")
     command -v glow >/dev/null || missing+=("glow")
+    command -v uv >/dev/null || missing+=("uv")
 
     if [[ ${#missing[@]} -gt 0 ]]; then
         warn "Missing dependencies: ${missing[*]}"
@@ -188,6 +227,7 @@ install_deps() {
             warn "Please install: ${missing[*]}"
             warn "  Ubuntu/Debian: sudo apt install neovim tmux fd-find ripgrep nodejs glow"
             warn "  Arch: sudo pacman -S neovim tmux fd ripgrep nodejs glow"
+            warn "  uv: curl -LsSf https://astral.sh/uv/install.sh | sh"
         fi
     else
         success "All dependencies installed."
@@ -206,6 +246,7 @@ uninstall() {
     [[ -L "$HOME/.config/ghostty/config" ]] && rm "$HOME/.config/ghostty/config" && success "Removed ~/.config/ghostty/config"
     [[ -L "$HOME/Library/Application Support/com.mitchellh.ghostty/config.ghostty" ]] && rm "$HOME/Library/Application Support/com.mitchellh.ghostty/config.ghostty" && success "Removed ghostty macOS config"
     [[ -L "$HOME/.config/nvim/init.lua" ]] && rm "$HOME/.config/nvim/init.lua" && success "Removed ~/.config/nvim/init.lua"
+    [[ -L "$HOME/.config/nvim/lua" ]] && rm "$HOME/.config/nvim/lua" && success "Removed ~/.config/nvim/lua"
     [[ -L "$HOME/.config/cheatsheets/tmux.md" ]] && rm "$HOME/.config/cheatsheets/tmux.md" && success "Removed ~/.config/cheatsheets/tmux.md"
     [[ -L "$HOME/.config/cheatsheets/nvim.md" ]] && rm "$HOME/.config/cheatsheets/nvim.md" && success "Removed ~/.config/cheatsheets/nvim.md"
     [[ -L "$HOME/.config/zsh/aliases.zsh" ]] && rm "$HOME/.config/zsh/aliases.zsh" && success "Removed ~/.config/zsh/aliases.zsh"
@@ -231,7 +272,8 @@ Commands:
     install     Install all configurations (default)
     tmux        Install only tmux configuration
     ghostty     Install only Ghostty configuration
-    nvim        Install only neovim configuration
+    nvim        Install only neovim configuration (incl. Python venv)
+    nvim-venv   Create/update the neovim Python venv (molten-nvim/Jupyter)
     zsh         Install only zsh aliases
     cheatsheets Install only cheatsheets
     deps        Check/install dependencies and Nerd Font
@@ -273,6 +315,9 @@ main() {
             ;;
         nvim)
             install_nvim
+            ;;
+        nvim-venv)
+            install_nvim_venv
             ;;
         zsh)
             install_zsh

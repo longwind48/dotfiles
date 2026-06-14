@@ -2,7 +2,7 @@
 # Dotfiles Makefile
 # ============================================
 
-.PHONY: all install tmux ghostty nvim zsh cheatsheets deps fonts uninstall help
+.PHONY: all install tmux ghostty nvim nvim-venv zsh cheatsheets deps fonts uninstall help
 
 all: install
 
@@ -15,8 +15,11 @@ tmux: ## Install only tmux configuration
 ghostty: ## Install only Ghostty configuration
 	@./install.sh ghostty
 
-nvim: ## Install only neovim configuration
+nvim: ## Install only neovim configuration (incl. Python venv)
 	@./install.sh nvim
+
+nvim-venv: ## Create/update neovim Python venv (molten-nvim/Jupyter)
+	@./install.sh nvim-venv
 
 zsh: ## Install only zsh aliases
 	@./install.sh zsh
