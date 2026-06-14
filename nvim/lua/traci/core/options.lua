@@ -37,3 +37,10 @@ opt.splitbelow = true -- split horizontal window to the bottom
 
 -- turn off swapfile
 opt.swapfile = false
+
+-- python host for remote plugins (molten-nvim) -- dedicated uv venv
+vim.g.python3_host_prog = vim.fn.expand("~/.virtualenvs/neovim/bin/python")
+-- let cairosvg find homebrew's libcairo (SVG transparency in molten output)
+vim.env.DYLD_FALLBACK_LIBRARY_PATH = "/opt/homebrew/lib"
+-- put the neovim venv bin on PATH so jupytext.nvim finds the `jupytext` CLI
+vim.env.PATH = vim.fn.expand("~/.virtualenvs/neovim/bin") .. ":" .. vim.env.PATH
