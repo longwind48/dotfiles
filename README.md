@@ -1,6 +1,6 @@
 # Dotfiles
 
-Personal development environment for macOS and Linux with tmux, Neovim, and Zsh configurations.
+Personal development environment for macOS and Linux with Ghostty, tmux, Neovim, and Zsh configurations.
 
 ## Quick Start
 
@@ -12,6 +12,7 @@ cd ~/.dotfiles
 
 ## What's Included
 
+- **Ghostty** terminal with Catppuccin Mocha theme, JetBrains Mono Nerd Font, and tmux-friendly settings
 - **Tmux** with Catppuccin theme, vi-style navigation, and session persistence
 - **Neovim** with LSP support, fuzzy finding, and markdown editing
 - **Zsh aliases** for tmux/nvim workflow shortcuts
@@ -72,6 +73,7 @@ Run `./install.sh deps` to check and install all dependencies.
 
 ```bash
 ./install.sh           # Install everything
+./install.sh ghostty   # Install Ghostty only
 ./install.sh tmux      # Install tmux only
 ./install.sh nvim      # Install neovim only
 ./install.sh zsh       # Install zsh aliases only
