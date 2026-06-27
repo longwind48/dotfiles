@@ -75,6 +75,10 @@ install_tmux() {
     # Create resurrect directory to prevent errors on fresh installs
     mkdir -p "$HOME/.tmux/resurrect"
     success "Tmux resurrect directory created."
+
+    # Claude Code -> tmux window-rename hook script (wired in ~/.claude/settings.json
+    # as a UserPromptSubmit hook; names the window after the first prompt).
+    link "$DOTFILES_DIR/claude/bin/cc-tmux-rename.sh" "$HOME/.claude/bin/cc-tmux-rename.sh"
 }
 
 # Install ghostty configuration
