@@ -76,9 +76,20 @@ install_tmux() {
     mkdir -p "$HOME/.tmux/resurrect"
     success "Tmux resurrect directory created."
 
-    # Claude Code -> tmux window-rename hook script (wired in ~/.claude/settings.json
-    # as a UserPromptSubmit hook; names the window after the first prompt).
+    # Claude Code -> tmux window-rename hook script (names the window after the
+    # first prompt of a session). The script is symlinked here, but it only runs
+    # once wired as a UserPromptSubmit hook in ~/.claude/settings.json — a file
+    # this repo deliberately doesn't manage (it holds personal/credential config).
     link "$DOTFILES_DIR/claude/bin/cc-tmux-rename.sh" "$HOME/.claude/bin/cc-tmux-rename.sh"
+    if command -v claude >/dev/null && ! grep -q 'cc-tmux-rename.sh' "$HOME/.claude/settings.json" 2>/dev/null; then
+        warn "To name tmux windows from your first Claude Code prompt, add this hook"
+        warn "to the \"hooks\" object in ~/.claude/settings.json:"
+        cat <<'EOF'
+    "UserPromptSubmit": [
+      { "matcher": "", "hooks": [ { "type": "command", "command": "~/.claude/bin/cc-tmux-rename.sh" } ] }
+    ]
+EOF
+    fi
 }
 
 # Install ghostty configuration
@@ -254,6 +265,7 @@ uninstall() {
     [[ -L "$HOME/.config/cheatsheets/tmux.md" ]] && rm "$HOME/.config/cheatsheets/tmux.md" && success "Removed ~/.config/cheatsheets/tmux.md"
     [[ -L "$HOME/.config/cheatsheets/nvim.md" ]] && rm "$HOME/.config/cheatsheets/nvim.md" && success "Removed ~/.config/cheatsheets/nvim.md"
     [[ -L "$HOME/.config/zsh/aliases.zsh" ]] && rm "$HOME/.config/zsh/aliases.zsh" && success "Removed ~/.config/zsh/aliases.zsh"
+    [[ -L "$HOME/.claude/bin/cc-tmux-rename.sh" ]] && rm "$HOME/.claude/bin/cc-tmux-rename.sh" && success "Removed ~/.claude/bin/cc-tmux-rename.sh (remove the UserPromptSubmit hook from ~/.claude/settings.json manually)"
 
     # Clean up empty directories
     rmdir "$HOME/.config/cheatsheets" 2>/dev/null || true

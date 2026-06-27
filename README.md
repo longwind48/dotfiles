@@ -13,7 +13,7 @@ cd ~/.dotfiles
 ## What's Included
 
 - **Ghostty** terminal with Catppuccin Mocha theme, JetBrains Mono Nerd Font, and tmux-friendly settings
-- **Tmux** with Catppuccin theme, vi-style navigation, and session persistence
+- **Tmux** with Catppuccin theme, vi-style navigation, session persistence, and auto-naming of windows from your first Claude Code prompt
 - **Neovim** with LSP support, fuzzy finding, markdown editing, and molten-nvim (Jupyter cells)
 - **Zsh aliases** for tmux/nvim workflow shortcuts
 - **Cheatsheets** accessible via `tmuxhelp` and `nvimhelp` commands
@@ -43,6 +43,18 @@ Run `./install.sh deps` to check and install all dependencies.
    source ~/.config/zsh/aliases.zsh
    ```
    Then: `exec zsh`
+
+6. **Wire the Claude Code window-rename hook** (optional, requires Claude Code):
+   The install symlinks `~/.claude/bin/cc-tmux-rename.sh`, but it only runs once
+   registered as a hook. `~/.claude/settings.json` isn't managed by this repo (it
+   holds personal/credential config), so add this to its `hooks` object:
+   ```json
+   "UserPromptSubmit": [
+     { "matcher": "", "hooks": [ { "type": "command", "command": "~/.claude/bin/cc-tmux-rename.sh" } ] }
+   ]
+   ```
+   The tmux window then names itself from your first prompt each session (instant
+   slug, upgraded to a tidy title by a background `claude -p` call), then locks.
 
 ## Key Features
 
