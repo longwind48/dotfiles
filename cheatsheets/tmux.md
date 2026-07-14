@@ -19,6 +19,16 @@
 | `C-Space (` | Previous session |
 | `C-Space )` | Next session |
 
+## AI Agents (ccmux)
+
+| Keybind/Command | Action |
+|-----------------|--------|
+| `C-Space C-p` | Open ccmux picker popup |
+| `C-Space S` | Toggle ccmux sidebar |
+| `ccmux show` | List tracked agent sessions |
+| `ccmux status` | Show daemon/session status |
+| `ccmux setup` | Install or update agent hooks |
+
 ## Windows
 
 | Keybind | Action |

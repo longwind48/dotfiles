@@ -76,6 +76,22 @@ install_tmux() {
     mkdir -p "$HOME/.tmux/resurrect"
     success "Tmux resurrect directory created."
 
+    # ccmux tracks live AI coding agent sessions across tmux panes and powers the
+    # Prefix+C-p picker / Prefix+S sidebar bindings in tmux.conf.
+    if ! command -v ccmux >/dev/null; then
+        if [[ "$OS" == "macos" ]] && command -v brew >/dev/null; then
+            info "Installing ccmux..."
+            brew install epilande/tap/ccmux
+        else
+            warn "ccmux not found. Install it manually: https://github.com/epilande/ccmux"
+        fi
+    fi
+
+    if command -v ccmux >/dev/null; then
+        info "Installing/updating ccmux agent hooks..."
+        ccmux setup || warn "ccmux setup failed; run 'ccmux setup' manually after installing agent CLIs."
+    fi
+
     # Claude Code -> tmux window-rename hook script (names the window after the
     # first prompt of a session). The script is symlinked here, but it only runs
     # once wired as a UserPromptSubmit hook in ~/.claude/settings.json — a file
