@@ -24,8 +24,8 @@
 
 | Keybind/Command | Action |
 |-----------------|--------|
-| `Alt+p` | Open ccmux picker popup |
-| `Alt+Shift+p` | Toggle ccmux sidebar |
+| `C-Space a` | Open ccmux picker popup |
+| `C-Space A` | Toggle ccmux sidebar |
 | `ccmux show` | List tracked agent sessions |
 | `ccmux status` | Show daemon/session status |
 | `ccmux setup` | Install or update agent hooks |
