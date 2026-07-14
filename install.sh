@@ -90,6 +90,10 @@ install_tmux() {
     if command -v ccmux >/dev/null; then
         info "Installing/updating ccmux agent hooks..."
         ccmux setup || warn "ccmux setup failed; run 'ccmux setup' manually after installing agent CLIs."
+        if [[ -f "$HOME/.codex/config.toml" ]] && grep -q '^[[:space:]]*codex_hooks[[:space:]]*=' "$HOME/.codex/config.toml"; then
+            info "Updating deprecated Codex hooks feature flag..."
+            perl -0pi -e 's/^([[:space:]]*)codex_hooks([[:space:]]*=)/${1}hooks$2/m' "$HOME/.codex/config.toml"
+        fi
     fi
 
     # Claude Code -> tmux window-rename hook script (names the window after the
