@@ -13,6 +13,7 @@
 | `tmux rename -t old new` | Rename session (CLI) |
 | `C-Space d` | Detach |
 | `C-Space s` | Session picker |
+| `C-Space S` | Session picker |
 | `Alt+s` | Session picker (no prefix) |
 | `C-Space Tab` | Toggle last session |
 | `C-Space $` | Rename session |
@@ -23,8 +24,8 @@
 
 | Keybind/Command | Action |
 |-----------------|--------|
-| `C-Space C-p` | Open ccmux picker popup |
-| `C-Space S` | Toggle ccmux sidebar |
+| `Alt+p` | Open ccmux picker popup |
+| `Alt+Shift+p` | Toggle ccmux sidebar |
 | `ccmux show` | List tracked agent sessions |
 | `ccmux status` | Show daemon/session status |
 | `ccmux setup` | Install or update agent hooks |

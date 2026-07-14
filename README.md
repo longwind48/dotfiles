@@ -68,8 +68,8 @@ Run `./install.sh deps` to check and install all dependencies.
 - Vi-style navigation and copy mode
 - Session persistence with tmux-resurrect
 - Quick session picker: `Alt+s`
-- ccmux AI-agent picker: `Ctrl+Space C-p`
-- ccmux sidebar toggle: `Ctrl+Space S`
+- ccmux AI-agent picker: `Alt+p`
+- ccmux sidebar toggle: `Alt+Shift+p`
 
 ### Neovim
 - Leader: `Space`
