@@ -94,6 +94,34 @@ install_tmux() {
             info "Updating deprecated Codex hooks feature flag..."
             perl -0pi -e 's/^([[:space:]]*)codex_hooks([[:space:]]*=)/${1}hooks$2/m' "$HOME/.codex/config.toml"
         fi
+
+        # ccmux 1.1.0 has end-of-turn Codex hooks but no turn-start hook.
+        # UserPromptSubmit covers normal turns; PreToolUse catches automatic
+        # goal continuations that start without a submitted prompt.
+        if command -v jq >/dev/null && [[ -f "$HOME/.codex/hooks.json" ]]; then
+            local turn_hook="$HOME/.codex/hooks/ccmux-user-prompt-submit.sh"
+            link "$DOTFILES_DIR/codex/hooks/ccmux-user-prompt-submit.sh" "$turn_hook"
+            local hook_event
+            for hook_event in UserPromptSubmit PreToolUse; do
+                if ! jq -e --arg command "$turn_hook" --arg event "$hook_event" \
+                    '.hooks[$event][]?.hooks[]? | select(.command == $command)' \
+                    "$HOME/.codex/hooks.json" >/dev/null; then
+                    local hooks_tmp
+                    hooks_tmp=$(mktemp)
+                    jq --arg command "$turn_hook" --arg event "$hook_event" \
+                        '.hooks[$event] = ((.hooks[$event] // []) + [{
+                            hooks: [{
+                                type: "command",
+                                command: $command,
+                                timeoutSec: 1
+                            }]
+                        }])' \
+                        "$HOME/.codex/hooks.json" > "$hooks_tmp"
+                    mv "$hooks_tmp" "$HOME/.codex/hooks.json"
+                    success "Added ccmux Codex $hook_event hook."
+                fi
+            done
+        fi
     fi
 
     # Claude Code -> tmux window-rename hook script (names the window after the
