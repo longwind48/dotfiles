@@ -77,7 +77,7 @@ install_tmux() {
     success "Tmux resurrect directory created."
 
     # ccmux tracks live AI coding agent sessions across tmux panes and powers the
-    # Prefix+C-p picker / Prefix+S sidebar bindings in tmux.conf.
+    # Prefix+a picker / Prefix+A sidebar bindings in tmux.conf.
     if ! command -v ccmux >/dev/null; then
         if [[ "$OS" == "macos" ]] && command -v brew >/dev/null; then
             info "Installing ccmux..."
@@ -87,9 +87,22 @@ install_tmux() {
         fi
     fi
 
-    if command -v ccmux >/dev/null; then
+    local ccmux_bin
+    ccmux_bin="$(command -v ccmux 2>/dev/null || true)"
+    if command -v bun >/dev/null && command -v git >/dev/null; then
+        info "Installing dotfiles ccmux window-name patch..."
+        if "$DOTFILES_DIR/ccmux/install.sh"; then
+            ccmux_bin="$HOME/.local/bin/ccmux"
+        else
+            warn "Patched ccmux build failed; using ${ccmux_bin:-no ccmux binary}."
+        fi
+    else
+        warn "bun and git are required to build the patched ccmux binary."
+    fi
+
+    if [[ -n "$ccmux_bin" ]]; then
         info "Installing/updating ccmux agent hooks..."
-        ccmux setup || warn "ccmux setup failed; run 'ccmux setup' manually after installing agent CLIs."
+        "$ccmux_bin" setup || warn "ccmux setup failed; run 'ccmux setup' manually after installing agent CLIs."
         if [[ -f "$HOME/.codex/config.toml" ]] && grep -q '^[[:space:]]*codex_hooks[[:space:]]*=' "$HOME/.codex/config.toml"; then
             info "Updating deprecated Codex hooks feature flag..."
             perl -0pi -e 's/^([[:space:]]*)codex_hooks([[:space:]]*=)/${1}hooks$2/m' "$HOME/.codex/config.toml"

@@ -13,7 +13,7 @@ cd ~/.dotfiles
 ## What's Included
 
 - **Ghostty** terminal with Catppuccin Mocha theme, JetBrains Mono Nerd Font, and tmux-friendly settings
-- **Tmux** with Catppuccin theme, vi-style navigation, session persistence, ccmux AI-agent picker/sidebar, and auto-naming of windows from your first Claude Code prompt
+- **Tmux** with Catppuccin theme, vi-style navigation, session persistence, a patched ccmux picker with tmux window names, and auto-naming of windows from your first Claude Code prompt
 - **Neovim** with LSP support, fuzzy finding, markdown editing, and molten-nvim (Jupyter cells)
 - **Zsh aliases** for tmux/nvim workflow shortcuts
 - **Cheatsheets** accessible via `tmuxhelp` and `nvimhelp` commands
@@ -38,7 +38,7 @@ Run `./install.sh deps` to check and install all dependencies.
 
 4. **Initialize ccmux hooks** (if agent CLIs were installed after dotfiles):
    ```bash
-   ccmux setup
+   ~/.local/bin/ccmux setup
    ```
 
 5. **Open nvim**: Plugins install automatically on first launch

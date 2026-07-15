@@ -11,6 +11,7 @@ alias tn='tmux new -s'
 alias tl='tmux ls'
 alias tk='tmux kill-session -t'
 alias td='tmux detach'
+[[ -x "$HOME/.local/bin/ccmux" ]] && alias ccmux="$HOME/.local/bin/ccmux"
 
 # Neovim
 alias vi='nvim'

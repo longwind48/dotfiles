@@ -1,0 +1,165 @@
+diff --git a/src/daemon/pane-discovery.ts b/src/daemon/pane-discovery.ts
+index f567f5d..46ac5b1 100644
+--- a/src/daemon/pane-discovery.ts
++++ b/src/daemon/pane-discovery.ts
+@@ -65,0 +66 @@ export async function listTmuxPanesOrThrow(): Promise<TmuxPane[]> {
++          "#{window_name}",
+@@ -111,0 +113 @@ export async function listTmuxPanesOrThrow(): Promise<TmuxPane[]> {
++      windowName,
+@@ -137,0 +140 @@ export async function listTmuxPanesOrThrow(): Promise<TmuxPane[]> {
++        windowName: windowName || null,
+diff --git a/src/daemon/server.test.ts b/src/daemon/server.test.ts
+index 00adf46..920105d 100644
+--- a/src/daemon/server.test.ts
++++ b/src/daemon/server.test.ts
+@@ -142,0 +143 @@ function fakePane(overrides: Partial<TmuxPane> = {}): TmuxPane {
++    windowName: "editor",
+@@ -550,0 +552,11 @@ describe("DaemonServer", () => {
++    it("should expose the tmux window name from the pane cache", async () => {
++      const { internals } = createServer(
++        undefined,
++        new Map([["%1", fakePane({ windowName: "feature-work" })]]),
++      );
++
++      const enriched = await internals.enrichSession(fakeSession("s1", "%1"));
++
++      expect(enriched.tmuxWindowName).toBe("feature-work");
++    });
++
+diff --git a/src/daemon/server.ts b/src/daemon/server.ts
+index 6d07ac9..3804e73 100644
+--- a/src/daemon/server.ts
++++ b/src/daemon/server.ts
+@@ -369,0 +370 @@ export class DaemonServer {
++    const tmuxWindowName = paneInfo?.windowName ?? null;
+@@ -391,0 +393 @@ export class DaemonServer {
++      tmuxWindowName,
+diff --git a/src/lib/preferences.ts b/src/lib/preferences.ts
+index a5c8640..08a8f57 100644
+--- a/src/lib/preferences.ts
++++ b/src/lib/preferences.ts
+@@ -102,0 +103 @@ export const COLUMN_FIELDS = [
++  "window",
+diff --git a/src/tui/components/SessionItem.test.tsx b/src/tui/components/SessionItem.test.tsx
+index 319578c..67f0f89 100644
+--- a/src/tui/components/SessionItem.test.tsx
++++ b/src/tui/components/SessionItem.test.tsx
+@@ -668,0 +669,9 @@ describe("SessionItem row 2 (subtitle)", () => {
++  it("renders the tmux window name in a configured window field", async () => {
++    const frame = await renderItem({
++      session: mockEnrichedSession({ tmuxWindowName: "feature-work" }),
++      columns: { row1: { right: ["window"] } },
++    });
++
++    expect(frame).toContain("feature-work");
++  });
++
+diff --git a/src/tui/components/SessionItem.tsx b/src/tui/components/SessionItem.tsx
+index afb94ac..04058c4 100644
+--- a/src/tui/components/SessionItem.tsx
++++ b/src/tui/components/SessionItem.tsx
+@@ -215,0 +216 @@ interface FieldRenderContext {
++  windowName: string;
+@@ -421,0 +423,8 @@ const FieldCell: Component<{
++    case "window":
++      return (
++        <box width={width}>
++          <text fg={dimColor(ctx, theme.subtext)}>
++            {alignText(ctx.windowName, width, side)}
++          </text>
++        </box>
++      );
+@@ -725 +734,4 @@ export const SessionItem: Component<SessionItemProps> = (props) => {
+-      (e) => e.field !== "project" && e.field !== "prompt",
++      (e) =>
++        e.field !== "project" &&
++        e.field !== "prompt" &&
++        visibleField(props.session, e.field),
+@@ -764 +776 @@ export const SessionItem: Component<SessionItemProps> = (props) => {
+-      (e) => e.field !== "prompt",
++      (e) => e.field !== "prompt" && visibleField(props.session, e.field),
+@@ -862,0 +875,5 @@ export const SessionItem: Component<SessionItemProps> = (props) => {
++    get windowName() {
++      return props.session.tmuxWindowName
++        ? truncateText(props.session.tmuxWindowName, 16)
++        : "";
++    },
+@@ -890 +907 @@ export const SessionItem: Component<SessionItemProps> = (props) => {
+-  /** Filter out entries whose field has no data — keeps row 2 from rendering blanks. */
++  /** Filter out optional entries whose field has no data. */
+@@ -896 +913 @@ export const SessionItem: Component<SessionItemProps> = (props) => {
+-  const row1 = createMemo(() => columns().row1);
++  const row1 = createMemo(() => filterRow(columns().row1));
+@@ -957,0 +975 @@ function visibleField(session: EnrichedSession, field: ColumnField): boolean {
++    case "window":
+diff --git a/src/tui/components/session-columns.test.ts b/src/tui/components/session-columns.test.ts
+index a835cce..2d2381f 100644
+--- a/src/tui/components/session-columns.test.ts
++++ b/src/tui/components/session-columns.test.ts
+@@ -186 +186 @@ describe("resolveColumns defaults", () => {
+-  it("at wide width includes agent/version/pane/time on right", () => {
++  it("at wide width includes agent/version/window/pane/time on right", () => {
+@@ -190,0 +191 @@ describe("resolveColumns defaults", () => {
++    expect(fields).toContain("window");
+@@ -194,0 +196,5 @@ describe("resolveColumns defaults", () => {
++  it("keeps the window column out of medium-width layouts", () => {
++    const fields = resolveColumns(80).row1.right.map((e) => e.field);
++    expect(fields).not.toContain("window");
++  });
++
+@@ -326,0 +333,10 @@ describe("hasFieldData", () => {
++  it("returns true for window when tmuxWindowName is present", () => {
++    expect(hasFieldData(mockEnrichedSession(), "window")).toBe(false);
++    expect(
++      hasFieldData(
++        mockEnrichedSession({ tmuxWindowName: "feature-work" }),
++        "window",
++      ),
++    ).toBe(true);
++  });
++
+@@ -396 +412 @@ describe("entryRightWidth", () => {
+-  it("returns fixed widths for version, pane, time", () => {
++  it("returns fixed widths for version, window, pane, time", () => {
+@@ -397,0 +414 @@ describe("entryRightWidth", () => {
++    expect(entryRightWidth({ field: "window" })).toBe(16);
+diff --git a/src/tui/components/session-columns.ts b/src/tui/components/session-columns.ts
+index 6a055da..0d208d1 100644
+--- a/src/tui/components/session-columns.ts
++++ b/src/tui/components/session-columns.ts
+@@ -173,0 +174,7 @@ const DEFAULT_COLUMNS: ColumnsConfig = {
++      lg: [
++        { field: "agent", mode: "full" },
++        "version",
++        "window",
++        "pane",
++        "time",
++      ],
+@@ -446,0 +454,2 @@ export function hasFieldData(
++    case "window":
++      return !!session.tmuxWindowName;
+@@ -655,0 +665,2 @@ export function entryRightWidth(entry: ResolvedEntry): number {
++    case "window":
++      return 16;
+diff --git a/src/tui/components/test-helpers.tsx b/src/tui/components/test-helpers.tsx
+index 186b0ef..b39685c 100644
+--- a/src/tui/components/test-helpers.tsx
++++ b/src/tui/components/test-helpers.tsx
+@@ -22,0 +23 @@ export function mockEnrichedSession(
++    tmuxWindowName: null,
+diff --git a/src/tui/store.ts b/src/tui/store.ts
+index ab8160e..de653c2 100644
+--- a/src/tui/store.ts
++++ b/src/tui/store.ts
+@@ -194,0 +195 @@ export function fabricateInvokeSession(
++    tmuxWindowName: null,
+diff --git a/src/types/session.ts b/src/types/session.ts
+index 4ceb7f2..0dfbf14 100644
+--- a/src/types/session.ts
++++ b/src/types/session.ts
+@@ -250,0 +251,2 @@ export interface EnrichedSession extends Session {
++  /** The tmux window name containing this session's pane */
++  tmuxWindowName: string | null;
+@@ -289,0 +292,2 @@ export interface TmuxPane {
++  /** User-visible tmux window name */
++  windowName?: string | null;
