@@ -1,5 +1,8 @@
 [keys]
 prefix = "ctrl+space"
+# Toggle back to the last-focused pane/agent, globally across tabs and
+# workspaces (herdr's equivalent of tmux `prefix+l` last-window).
+last_pane = "prefix+space"
 
 [ui]
 show_agent_labels_on_pane_borders = true
