@@ -166,6 +166,27 @@ install_ghostty() {
     success "Ghostty config installed. Reload with Cmd+Shift+,"
 }
 
+# Install herdr configuration
+install_herdr() {
+    info "Installing herdr configuration..."
+    mkdir -p "$HOME/.config/herdr"
+    link "$DOTFILES_DIR/herdr/config.toml" "$HOME/.config/herdr/config.toml"
+
+    # Plugins are installed via the herdr CLI, not symlinked config. Install the
+    # tab-smart-rename plugin (referenced by the keybindings in config.toml) if
+    # herdr is present and the plugin isn't already installed.
+    if command -v herdr >/dev/null; then
+        if ! herdr plugin list 2>/dev/null | grep -q tab-smart-rename; then
+            info "Installing herdr tab-smart-rename plugin..."
+            herdr plugin install iurysza/herdr-tab-smart-rename --yes || \
+                warn "herdr plugin install failed; run manually: herdr plugin install iurysza/herdr-tab-smart-rename"
+        fi
+    else
+        warn "herdr not found — install it first, then re-run: ./install.sh herdr"
+    fi
+    success "herdr config installed. Reload a running server with 'herdr server reload-config'."
+}
+
 # Install neovim configuration
 install_nvim() {
     info "Installing Neovim configuration..."
@@ -321,6 +342,7 @@ uninstall() {
     [[ -L "$HOME/.tmux.conf" ]] && rm "$HOME/.tmux.conf" && success "Removed ~/.tmux.conf"
     [[ -L "$HOME/.config/ghostty/config" ]] && rm "$HOME/.config/ghostty/config" && success "Removed ~/.config/ghostty/config"
     [[ -L "$HOME/Library/Application Support/com.mitchellh.ghostty/config.ghostty" ]] && rm "$HOME/Library/Application Support/com.mitchellh.ghostty/config.ghostty" && success "Removed ghostty macOS config"
+    [[ -L "$HOME/.config/herdr/config.toml" ]] && rm "$HOME/.config/herdr/config.toml" && success "Removed ~/.config/herdr/config.toml"
     [[ -L "$HOME/.config/nvim/init.lua" ]] && rm "$HOME/.config/nvim/init.lua" && success "Removed ~/.config/nvim/init.lua"
     [[ -L "$HOME/.config/nvim/lua" ]] && rm "$HOME/.config/nvim/lua" && success "Removed ~/.config/nvim/lua"
     [[ -L "$HOME/.config/cheatsheets/tmux.md" ]] && rm "$HOME/.config/cheatsheets/tmux.md" && success "Removed ~/.config/cheatsheets/tmux.md"
@@ -349,6 +371,7 @@ Commands:
     install     Install all configurations (default)
     tmux        Install only tmux configuration
     ghostty     Install only Ghostty configuration
+    herdr       Install only herdr configuration (+ tab-smart-rename plugin)
     nvim        Install only neovim configuration (incl. Python venv)
     nvim-venv   Create/update the neovim Python venv (molten-nvim/Jupyter)
     zsh         Install only zsh aliases
@@ -373,6 +396,7 @@ main() {
             install_deps
             install_tmux
             install_ghostty
+            install_herdr
             install_nvim
             install_cheatsheets
             install_zsh
@@ -389,6 +413,9 @@ main() {
             ;;
         ghostty)
             install_ghostty
+            ;;
+        herdr)
+            install_herdr
             ;;
         nvim)
             install_nvim

@@ -1,0 +1,21 @@
+[keys]
+prefix = "ctrl+space"
+
+[ui]
+show_agent_labels_on_pane_borders = true
+agent_panel_sort = "spaces"
+
+[experimental]
+pane_history = true
+
+[[keys.command]]
+key = "prefix+a"
+type = "plugin_action"
+command = "tab-smart-rename.rename-now"
+description = "smart rename current tab"
+
+[[keys.command]]
+key = "prefix+shift+a"
+type = "plugin_action"
+command = "tab-smart-rename.rename-all"
+description = "force smart rename all tabs"
