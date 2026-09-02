@@ -1,3 +1,4 @@
+onboarding = false
 [keys]
 prefix = "ctrl+space"
 # Toggle back to the last-focused pane/agent, globally across tabs and
@@ -10,6 +11,7 @@ agent_panel_sort = "spaces"
 
 [experimental]
 pane_history = true
+kitty_graphics = true
 
 [[keys.command]]
 key = "prefix+a"
@@ -22,3 +24,13 @@ key = "prefix+shift+a"
 type = "plugin_action"
 command = "tab-smart-rename.rename-all"
 description = "force smart rename all tabs"
+
+[[keys.command]]
+key = "prefix+shift+b"
+type = "shell"
+command = '"${HERDR_BIN_PATH}" plugin pane open --plugin official.browser --entrypoint browser --placement overlay --focus'
+description = "open browser overlay"
+
+[theme]
+name = "kanagawa"
+auto_switch = false
